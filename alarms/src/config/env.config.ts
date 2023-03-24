@@ -8,4 +8,5 @@ export default () => ({
     database: process.env.MYSQL_DATABASE,
   },
   jwtSecret: process.env.JWT_SECRET,
+  hashRounds: parseInt(process.env.HASH_ROUNDS, 10) || 10,
 });
