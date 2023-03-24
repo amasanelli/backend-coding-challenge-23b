@@ -9,4 +9,8 @@ export default () => ({
   },
   jwtSecret: process.env.JWT_SECRET,
   hashRounds: parseInt(process.env.HASH_ROUNDS, 10) || 10,
+  google: {
+    clientId: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  },
 });
