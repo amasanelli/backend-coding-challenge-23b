@@ -10,12 +10,16 @@ import {
   Req,
   BadRequestException,
 } from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger/dist';
+import { ApiTags } from '@nestjs/swagger/dist/decorators/api-use-tags.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwtAuth.guard';
 import { AlarmsService } from './alarms.service';
 import { CreateAlarmDto } from './dtos/create-alarm.dto';
 import { UpdateAlarmDto } from './dtos/update-alarm.dto';
 
 @Controller('alarms')
+@ApiTags('alarms')
+@ApiBearerAuth()
 export class AlarmsController {
   constructor(private readonly alarmsService: AlarmsService) {}
 

@@ -91,6 +91,10 @@ export class AlarmsService {
   async subscribe(id: number, email: string) {
     const alarm = await this.alarmsRepository.findOneBy({ id });
 
+    if (!alarm) {
+      throw new Error('Alarm does not exist');
+    }
+
     const subscription = this.subscriptionRepository.create({ email, alarm });
     await this.subscriptionRepository.save(subscription);
 
