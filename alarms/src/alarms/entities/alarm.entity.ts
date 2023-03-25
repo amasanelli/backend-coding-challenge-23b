@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Subscription } from './subscription.entity';
 
 @Entity('alarms')
 export class Alarm {
@@ -16,4 +17,10 @@ export class Alarm {
 
   @Column()
   nextFire: Date;
+
+  @OneToMany(() => Subscription, (subscription) => subscription.alarm)
+  subscriptions: Subscription[];
+
+  @Column()
+  type: string;
 }

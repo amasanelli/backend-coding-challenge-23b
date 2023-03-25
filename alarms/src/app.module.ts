@@ -1,8 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import configuration from './config/env.config';
 import { User } from './users/entities/user.entity';
@@ -10,6 +8,10 @@ import { UsersModule } from './users/users.module';
 import { AlarmsModule } from './alarms/alarms.module';
 import { Alarm } from './alarms/entities/alarm.entity';
 import { ScheduleModule } from '@nestjs/schedule';
+import { RedisService } from './redis/redis.service';
+import { RedisModule } from './redis/redis.module';
+import { Subscription } from './alarms/entities/subscription.entity';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -25,7 +27,7 @@ import { ScheduleModule } from '@nestjs/schedule';
         username: configService.getOrThrow('mysql.username'),
         password: configService.getOrThrow('mysql.password'),
         database: configService.getOrThrow('mysql.database'),
-        entities: [User, Alarm],
+        entities: [User, Alarm, Subscription],
         synchronize: true,
       }),
       inject: [ConfigService],
@@ -34,8 +36,10 @@ import { ScheduleModule } from '@nestjs/schedule';
     AuthModule,
     UsersModule,
     AlarmsModule,
+    RedisModule,
+    MailModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}

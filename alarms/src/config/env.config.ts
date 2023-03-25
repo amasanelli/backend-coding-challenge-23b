@@ -13,4 +13,8 @@ export default () => ({
     clientId: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   },
+  gmail: {
+    user: process.env.GMAIL_USER,
+    password: process.env.GMAIL_PASSWORD,
+  },
 });
