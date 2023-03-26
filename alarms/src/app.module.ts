@@ -8,7 +8,6 @@ import { UsersModule } from './users/users.module';
 import { AlarmsModule } from './alarms/alarms.module';
 import { Alarm } from './alarms/entities/alarm.entity';
 import { ScheduleModule } from '@nestjs/schedule';
-import { RedisService } from './redis/redis.service';
 import { RedisModule } from './redis/redis.module';
 import { Subscription } from './alarms/entities/subscription.entity';
 import { MailModule } from './mail/mail.module';

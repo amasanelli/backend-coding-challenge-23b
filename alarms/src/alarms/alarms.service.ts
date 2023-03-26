@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, LessThan, Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { CreateAlarmDto } from './dtos/create-alarm.dto';
 import { UpdateAlarmDto } from './dtos/update-alarm.dto';
 import { Alarm } from './entities/alarm.entity';

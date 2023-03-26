@@ -1,4 +1,4 @@
-import { Controller, Req, Post, UseGuards, Body, Get } from '@nestjs/common';
+import { Controller, Req, Post, UseGuards, Get } from '@nestjs/common';
 import { ApiBody } from '@nestjs/swagger/dist';
 import { ApiTags } from '@nestjs/swagger/dist/decorators/api-use-tags.decorator';
 import { AuthService } from './auth.service';
@@ -21,7 +21,7 @@ export class AuthController {
 
   @Get('google-login')
   @UseGuards(GoogleAuthGuard)
-  async googleAuth(@Req() req) {}
+  async googleAuth() {}
 
   @Get('google-redirect')
   @UseGuards(GoogleAuthGuard)
