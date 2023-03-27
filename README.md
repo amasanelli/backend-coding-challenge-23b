@@ -10,7 +10,7 @@
 
 `docker-compose up -d`
 
-`npm start`
+`npm run start`
 
 access localhost:3000/docs
 
@@ -59,3 +59,14 @@ to create a multiple-days alarm send this payload
 ```
 ## test
 
+`npm run test`
+
+## to do
+
+- add more tests (test deeply)
+- enhance docs (openApi)
+- enhance mail template
+- create custom errors
+- enhance error handling
+- add returned types (lint)
+- create a separated service to handle cron tasks and another one to send emails

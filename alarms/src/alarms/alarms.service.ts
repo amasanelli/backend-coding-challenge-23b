@@ -20,7 +20,7 @@ export class AlarmsService {
     private mailService: MailService,
   ) {}
 
-  private parseType(createAlarmDto: CreateAlarmDto) {
+  parseType(createAlarmDto: CreateAlarmDto) {
     const { daily, monthly, multipleDays } = createAlarmDto;
 
     let type = 'one-shot';
