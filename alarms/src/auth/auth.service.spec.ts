@@ -1,5 +1,5 @@
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { JwtModule, JwtService } from '@nestjs/jwt';
+import { JwtModule } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
@@ -8,10 +8,6 @@ import { LoginUserDto } from './dtos/loginUser.dto';
 
 const configuration = () => ({
   jwtSecret: 'secret',
-});
-
-const usersServiceMockFactory = () => ({
-  findOne: jest.fn(),
 });
 
 describe('AuthService', () => {

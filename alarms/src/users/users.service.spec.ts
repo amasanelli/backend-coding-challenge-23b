@@ -1,4 +1,4 @@
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -24,7 +24,6 @@ const configuration = () => ({
 describe('UsersService', () => {
   let service: UsersService;
   let repositoryMock: MockType<Repository<User>>;
-  let configService: ConfigService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -44,7 +43,6 @@ describe('UsersService', () => {
     }).compile();
 
     service = module.get<UsersService>(UsersService);
-    configService = module.get<ConfigService>(ConfigService);
     repositoryMock = module.get(getRepositoryToken(User));
   });
 

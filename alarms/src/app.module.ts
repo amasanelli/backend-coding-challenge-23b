@@ -8,9 +8,11 @@ import { UsersModule } from './users/users.module';
 import { AlarmsModule } from './alarms/alarms.module';
 import { Alarm } from './alarms/entities/alarm.entity';
 import { ScheduleModule } from '@nestjs/schedule';
-import { RedisModule } from './redis/redis.module';
 import { Subscription } from './alarms/entities/subscription.entity';
 import { MailModule } from './mail/mail.module';
+import { BullModule } from '@nestjs/bull';
+import { RedisConsumerModule } from './redisConsumer/redisConsumer.module';
+import { RedisProducerModule } from './redisProducer/redisProducer.module';
 
 @Module({
   imports: [
@@ -32,11 +34,22 @@ import { MailModule } from './mail/mail.module';
       inject: [ConfigService],
     }),
     ScheduleModule.forRoot(),
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        redis: {
+          host: configService.getOrThrow('redis.host'),
+          port: configService.getOrThrow('redis.port'),
+        },
+      }),
+      inject: [ConfigService],
+    }),
     AuthModule,
     UsersModule,
     AlarmsModule,
-    RedisModule,
     MailModule,
+    RedisConsumerModule,
+    RedisProducerModule,
   ],
   controllers: [],
   providers: [],

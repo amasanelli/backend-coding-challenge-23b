@@ -1,9 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { MailModule } from '../mail/mail.module';
 import { MailService } from '../mail/mail.service';
-import { RedisModule } from '../redis/redis.module';
-import { RedisService } from '../redis/redis.service';
+import { RedisProducerModule } from '../redisProducer/redisProducer.module';
+import { RedisProducerService } from '../redisProducer/redisProducer.service';
 import { AlarmsService } from './alarms.service';
 import { CreateAlarmDto } from './dtos/create-alarm.dto';
 import { Alarm } from './entities/alarm.entity';
@@ -25,7 +24,7 @@ describe('AlarmsService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [RedisModule],
+      imports: [],
       providers: [
         AlarmsService,
         {
@@ -37,8 +36,8 @@ describe('AlarmsService', () => {
           useFactory: repositoryMockFactory,
         },
         {
-          provide: MailService,
-          useValue: { sendFiredAlarmMail: jest.fn() },
+          provide: RedisProducerService,
+          useValue: {},
         },
       ],
     }).compile();
