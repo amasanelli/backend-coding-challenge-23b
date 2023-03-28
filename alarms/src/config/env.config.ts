@@ -17,4 +17,8 @@ export default () => ({
     user: process.env.GMAIL_USER,
     password: process.env.GMAIL_PASSWORD,
   },
+  redis: {
+    host: process.env.REDIS_HOST,
+    port: parseInt(process.env.REDIS_PORT, 10) || 6379,
+  },
 });

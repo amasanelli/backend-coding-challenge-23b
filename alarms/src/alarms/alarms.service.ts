@@ -1,13 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
+import { RedisProducerService } from '../redisProducer/redisProducer.service';
 import { CreateAlarmDto } from './dtos/create-alarm.dto';
 import { UpdateAlarmDto } from './dtos/update-alarm.dto';
 import { Alarm } from './entities/alarm.entity';
-import { Cron } from '@nestjs/schedule';
-import { RedisService } from '../redis/redis.service';
 import { Subscription } from './entities/subscription.entity';
-import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class AlarmsService {
@@ -16,8 +14,7 @@ export class AlarmsService {
     private alarmsRepository: Repository<Alarm>,
     @InjectRepository(Subscription)
     private subscriptionRepository: Repository<Subscription>,
-    private redisService: RedisService,
-    private mailService: MailService,
+    private redisProducerService: RedisProducerService,
   ) {}
 
   parseType(createAlarmDto: CreateAlarmDto) {
@@ -72,7 +69,7 @@ export class AlarmsService {
     const subscription = this.subscriptionRepository.create({ email, alarm });
     await this.subscriptionRepository.save(subscription);
 
-    this.redisService.addAlarm(fire, alarm.id);
+    await this.redisProducerService.addAlarm(fire, alarm.id);
     return alarm;
   }
 
@@ -85,7 +82,14 @@ export class AlarmsService {
   }
 
   findOne(id: number) {
-    return this.alarmsRepository.findOneBy({ id });
+    return this.alarmsRepository.findOne({
+      where: {
+        id,
+      },
+      relations: {
+        subscriptions: true,
+      },
+    });
   }
 
   async subscribe(id: number, email: string) {
@@ -110,65 +114,20 @@ export class AlarmsService {
     const { fire, daily, monthly, multipleDays, ...rest } = updateAlarmDto;
 
     const type = this.parseType(updateAlarmDto);
-    this.redisService.updateAlarm(fire, id);
+    await this.redisProducerService.updateAlarm(fire, id);
     return this.alarmsRepository.update(
       { id },
       { fire, type, nextFire: fire, ...rest },
     );
   }
 
-  async remove(id: number) {
-    this.redisService.deleteAlarm(id);
-    return this.alarmsRepository.delete({ id });
+  async updateNextFire(id: number, nextFire: Date) {
+    await this.redisProducerService.updateAlarm(nextFire, id);
+    return this.alarmsRepository.update({ id }, { nextFire });
   }
 
-  @Cron('* * * * * *')
-  private async handleCron() {
-    const now = new Date();
-    const alarmIds = await this.redisService.getAlarms(now);
-
-    const alarms = await this.alarmsRepository.find({
-      where: {
-        id: In(alarmIds),
-      },
-      relations: {
-        subscriptions: true,
-      },
-    });
-
-    for (const alarm of alarms) {
-      this.mailService.sendFiredAlarmMail(alarm);
-
-      if (alarm.type === 'one-shot') {
-        this.redisService.deleteAlarm(alarm.id);
-        await this.alarmsRepository.delete({ id: alarm.id });
-      } else {
-        let nextFire: Date;
-
-        if (alarm.type === 'daily') {
-          nextFire = new Date(
-            alarm.nextFire.setUTCDate(alarm.nextFire.getUTCDate() + 1),
-          );
-        } else if (alarm.type === 'monthly') {
-          nextFire = new Date(
-            alarm.nextFire.setUTCMonth(alarm.nextFire.getUTCMonth() + 1),
-          );
-        } else {
-          const arrDays = alarm.type.split(' ');
-          const dow = alarm.nextFire.getUTCDay();
-          const index = arrDays.indexOf(dow.toString());
-          const newDow =
-            index + 1 >= arrDays.length ? arrDays[0] : arrDays[index + 1];
-          nextFire = new Date(
-            alarm.nextFire.setUTCDate(
-              alarm.nextFire.getDate() +
-                (((+newDow + 6 - alarm.nextFire.getDay()) % 7) + 1),
-            ),
-          );
-        }
-        this.redisService.updateAlarm(nextFire, alarm.id);
-        await this.alarmsRepository.update({ id: alarm.id }, { nextFire });
-      }
-    }
+  async remove(id: number) {
+    await this.redisProducerService.deleteAlarm(id);
+    return this.alarmsRepository.delete({ id });
   }
 }
